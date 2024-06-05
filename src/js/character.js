@@ -15,45 +15,65 @@ class Character{
     this.level = 1;
     this.health = 100;
 
-    switch (type) {
-      case 'Bowman':
-        this.attack = 25;
-        this.defense = 25;
-        break;
-      case 'Swordsman':
-        this.attack = 40;
-        this.defense = 10;
-        break;
-      case 'Magician':
-        this.attack = 10;
-        this.defense = 40;
-        break;
-      case 'Daemon':
-        this.attack = 10;
-        this.defense = 40
-        break;
-      case 'Undead':
-        this.attack = 25;
-        this.defense = 25;
-        break;
-      case 'Zombie':
-        this.attack = 40;
-        this.defense = 10;
-        break;
     
      
-      default:
-        throw new Error('Недопустимый тип персонажа');
-    }
   }
 
   damage(points) {
-    
     this.health -= points * (1 - this.defense / 100);
     if (this.health < 0) {
       this.health = 0;
     }
-    
+
+    // Уменьшаем счетчик использования powerMode
+    if (this.powerMode) {
+      this._powerModeUses += 1;
+    }
+  }
+
+  levelUp() {
+    if (this.health > 0) {
+      this.level += 1;
+      this.attack = Math.round(this.attack * 1.2);
+      this.defense = Math.round(this.defense * 1.2);
+      this.health = 100;
+    } else {
+      throw new Error('Нельзя повысить уровень умершего персонажа');
+    }
+  }
+
+  get health() {
+    return this.powerMode ? this._health * 2 : this._health;
+  }
+
+  set health(value) {
+    this._health = Math.max(0, Math.min(value, 100));
+  }
+
+  get attack() {
+    return this.powerMode ? this._attack * 2 : this._attack;
+  }
+
+  set attack(value) {
+    this._attack = value;
+  }
+
+  get defense() {
+    return this.powerMode ? this._defense * 2 : this._defense;
+  }
+
+  set defense(value) {
+    this._defense = value;
+  }
+
+  get powerMode() {
+    return this._powerModeActivated && this._powerModeUses < 3;
+  }
+
+  set powerMode(value) {
+    if (value && !this._powerModeActivated) {
+      this._powerModeActivated = true;
+    }
   }
 }
 
@@ -73,3 +93,5 @@ try {
 } catch (error) {
   console.error(error.message); // Имя должно быть строкой от 2 до 10 символов
 }
+
+export default Character;
